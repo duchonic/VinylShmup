@@ -5,24 +5,32 @@
 #include "cocos2d.h"
 #include <map>
 
+USING_NS_CC;
 
-class KeyboardScene : public cocos2d::Layer
+class KeyboardScene : public Layer
 {
 public:
 
-    static cocos2d::Scene* createScene();
+    KeyboardScene() : speed(4){
+        log("constructor");
+    };
+    
+    static Scene* createScene();
     virtual bool init();
 
-    bool isKeyPressed(cocos2d::EventKeyboard::KeyCode);
-    double keyPressedDuration(cocos2d::EventKeyboard::KeyCode);
+    bool isKeyPressed(EventKeyboard::KeyCode);
+    double keyPressedDuration(EventKeyboard::KeyCode);
 
     CREATE_FUNC(KeyboardScene);
 
 private:
-    static std::map<cocos2d::EventKeyboard::KeyCode,
+    static std::map<EventKeyboard::KeyCode,
         std::chrono::high_resolution_clock::time_point> keys;
     cocos2d::Label * label;
     cocos2d::Sprite * sprite;
+    cocos2d::Sprite3D * ship3d;
+    
+    int speed;
     
 public:
     virtual void update(float delta) override;

@@ -2,7 +2,7 @@
 
 #include "KeyboardScene.hpp"
 
-USING_NS_CC;
+
 
 Scene* KeyboardScene::createScene()
 {
@@ -23,6 +23,25 @@ bool KeyboardScene::init()
     sprite = Sprite::create("ship.png");
     sprite->setPosition(this->getContentSize().width/2, this->getContentSize().height/2);
     this->addChild(sprite, 0);
+    
+    ship3d = Sprite3D::create("boss.c3b"); //c3b file, created with the FBX-converter
+    ship3d->setScale(5.f); //sets the object scale in float
+    ship3d->setPosition(Vec2(100,200)); //sets sprite position
+    ship3d->setRotation(180);
+    
+    this->addChild(ship3d, 1); //adds sprite to scene, z-index: 1
+    
+    
+    //rotate around the X axis
+    auto rotation = RotateBy::create(1, Vec3(0, 360, 0));
+    //our sprite object runs the action
+    ship3d->runAction(RepeatForever::create(rotation));
+    
+    
+    
+    
+    auto light = DirectionLight::create(Vec3(-1.0f, -1.0f, 0.0f), Color3B::RED);
+    addChild(light);
     
     label = cocos2d::Label::createWithSystemFont("Press the CTRL Key","Arial",11);
     label->setPosition(this->getBoundingBox().getMidX(),this->getBoundingBox().getMidY());
@@ -75,6 +94,7 @@ void KeyboardScene::update(float delta) {
     Node::update(delta);
 
     Vec2 pos = sprite->getPosition();
+    Vec2 shipPos3d = ship3d->getPosition();
     
     if(isKeyPressed(EventKeyboard::KeyCode::KEY_CTRL)) {
         std::stringstream ss;
@@ -87,19 +107,23 @@ void KeyboardScene::update(float delta) {
     }
 
     if(isKeyPressed(EventKeyboard::KeyCode::KEY_LEFT_ARROW)){
-        sprite->setPosition(--pos.x, pos.y);
+        sprite->setPosition(pos.x-=speed, pos.y);
+        ship3d->setPosition(shipPos3d.x-=speed, shipPos3d.y);
     }
     
     if(isKeyPressed(EventKeyboard::KeyCode::KEY_RIGHT_ARROW)){
-        sprite->setPosition(++pos.x, pos.y);
+        sprite->setPosition(pos.x+=speed, pos.y);
+        ship3d->setPosition(shipPos3d.x+=speed, shipPos3d.y);
     }
     
     if(isKeyPressed(EventKeyboard::KeyCode::KEY_UP_ARROW)){
-        sprite->setPosition(pos.x, ++pos.y);
+        sprite->setPosition(pos.x, pos.y+=speed);
+        ship3d->setPosition(shipPos3d.x, shipPos3d.y+=speed);
     }
     
     if(isKeyPressed(EventKeyboard::KeyCode::KEY_DOWN_ARROW)){
-        sprite->setPosition(pos.x, --pos.y);
+        sprite->setPosition(pos.x, pos.y-=speed);
+        ship3d->setPosition(shipPos3d.x, shipPos3d.y-=speed);
     }
 }
 // Because cocos2d-x requres createScene to be static, we need to make other non-pointer members static
